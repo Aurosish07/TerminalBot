@@ -1,0 +1,23 @@
+{
+  "name": "gptterminal",
+  "version": "1.0.0",
+  "description": "A terminal based Gpt",
+  "type": "module",
+  "main": "index.js",
+  "bin": {
+    "aurosish": "./index.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aurosish",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "chalk": "^5.3.0",
+    "cli-spinners": "^3.0.0",
+    "dotenv": "^16.4.5",
+    "inquirer": "^9.2.20",
+    "ora": "^8.0.1"
+  }
+}
