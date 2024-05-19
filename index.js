@@ -9,6 +9,14 @@ import color from "./algorithm.js";
 
 dotenv.config();
 
+let history = [
+
+    {
+        role: "system",
+        content: `You are an helpful assistant specifically designed to answer programming-related questions. However, you can answer other questions too. If you have to provide any code response, provide it without any comments in a diffirent header.`
+    }
+
+];
 
 async function startChat() {
     const answers = await inquirer.prompt([
@@ -23,22 +31,25 @@ async function startChat() {
     const req = answers.message.trim();
 
     if (req.toLowerCase() === "/bye") {
+        console.log(chalk.yellow("\tGoodbye !"));
         process.exit(1);
     }
 
+    let objUser = {
+        role: "user",
+        content: req
+    }
+
+    history.push(objUser);
+
+    console.log(history)
+
     const data = {
         model: "gpt-3.5-turbo-1106",
-        messages: [
-            {
-                role: "system",
-                content: "You are an helpful assistant specifically designed to answer programming-related questions. However, you can answer other questions too. If you have to provide any code response, provide it without any comments in a diffirent header."
-            },
-            {
-                role: "user",
-                content: req // Include user input message here
-            }
-        ]
+        messages: history
     };
+
+
 
     const loading = ora({
         spinner: cliSpinners.clock,
@@ -53,7 +64,22 @@ async function startChat() {
         });
         loading.stop();
 
+
         let finalResp = response.data.choices[0].message.content;
+
+
+
+
+        let objSystem = {
+            role: "assistant",
+            content: finalResp
+        }
+
+
+        history.push(objSystem);
+        // data.messages.push(objSystem);
+        console.log(history)
+
 
         console.log(`${chalk.cyan("\n🤖 ->")}`, color(finalResp));
     } catch (error) {
