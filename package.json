@@ -15,6 +15,7 @@
   "dependencies": {
     "axios": "^1.6.8",
     "chalk": "^5.3.0",
+    "chalk-animation": "^2.0.3",
     "cli-spinners": "^3.0.0",
     "dotenv": "^16.4.5",
     "inquirer": "^9.2.20",

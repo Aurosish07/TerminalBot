@@ -5,6 +5,7 @@ import ora from "ora";
 import chalk from "chalk";
 import dotenv from "dotenv";
 import color from "./algorithm.js";
+import chalkAnimation from 'chalk-animation';
 
 dotenv.config();
 
@@ -51,7 +52,16 @@ async function startChat() {
         const req = answers.message.trim();
 
         if (req.toLowerCase() === "/bye") {
-            console.log(chalk.yellow("\nGoodbye!"));
+            // console.log(chalk.yellow("\nGoodbye!"));
+
+            let animation = chalkAnimation.karaoke("\nGoodbye!");
+            animation.start();
+
+            setTimeout(() => {
+                animation.stop();
+            }, 1000);
+
+
             break;
         }
 
