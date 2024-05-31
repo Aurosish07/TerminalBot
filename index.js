@@ -6,6 +6,7 @@ import chalk from "chalk";
 import dotenv from "dotenv";
 import color from "./algorithm.js";
 import chalkAnimation from 'chalk-animation';
+import ChildExe from "./Childprocess.js";
 
 dotenv.config();
 
@@ -51,6 +52,8 @@ async function startChat() {
 
         const req = answers.message.trim();
 
+        let inprompt = req;
+
         if (req.toLowerCase() === "/bye") {
             // console.log(chalk.yellow("\nGoodbye!"));
 
@@ -65,36 +68,46 @@ async function startChat() {
             break;
         }
 
-        let userMessage = {
-            role: "user",
-            content: req
-        };
+        if (req.toLowerCase() === "/trace") {
 
-        history.push(userMessage);
 
-        const data = {
-            model: "gpt-3.5-turbo-1106",
-            messages: history
-        };
+            ChildExe();
+            break;
 
-        const botResponse = await getResponse(data);
+        } else {
 
-        if (botResponse) {
-            let assistantMessage = {
-                role: "assistant",
-                content: botResponse
+
+            let userMessage = {
+                role: "user",
+                content: inprompt
             };
 
-            history.push(assistantMessage);
+            history.push(userMessage);
 
-            // Ensure only the last MAX_CONVERSATIONS are kept (each conversation is 2 messages)
-            if (history.length > MAX_CONVERSATIONS * 2 + 1) {
-                history = [history[0], ...history.slice(-MAX_CONVERSATIONS * 2)];
+            const data = {
+                model: "gpt-3.5-turbo-1106",
+                messages: history
+            };
+
+            const botResponse = await getResponse(data);
+
+            if (botResponse) {
+                let assistantMessage = {
+                    role: "assistant",
+                    content: botResponse
+                };
+
+                history.push(assistantMessage);
+
+                // Ensure only the last MAX_CONVERSATIONS are kept (each conversation is 2 messages)
+                if (history.length > MAX_CONVERSATIONS * 2 + 1) {
+                    history = [history[0], ...history.slice(-MAX_CONVERSATIONS * 2)];
+                }
+
+                console.log(`${chalk.cyan("\n🤖 ->")}`, color(botResponse));
+            } else {
+                console.log(chalk.red("\nError: Failed to get a response from the assistant. Please try again."));
             }
-
-            console.log(`${chalk.cyan("\n🤖 ->")}`, color(botResponse));
-        } else {
-            console.log(chalk.red("\nError: Failed to get a response from the assistant. Please try again."));
         }
     }
 }
