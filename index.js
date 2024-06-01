@@ -1,52 +1,29 @@
-import axios from "axios";
-import inquirer from "inquirer";
-import cliSpinners from 'cli-spinners';
-import ora from "ora";
-import chalk from "chalk";
-import dotenv from "dotenv";
-import color from "./algorithm.js";
+import inquirer from 'inquirer';
+import chalk from 'chalk';
+import dotenv from 'dotenv';
+import color from './algorithm.js';
 import chalkAnimation from 'chalk-animation';
-import ChildExe from "./Childprocess.js";
+import ChildExe from './Childprocess.js';
+import getGptResponse from './openai_Grok_resp.js';
 
 dotenv.config();
 
 const MAX_CONVERSATIONS = 5;
 let history = [
     {
-        role: "system",
-        content: `You are an helpful assistant specifically designed to answer programming-related questions. However, you can answer other questions too. If you have to provide any code response, provide it without any comments .`
+        role: 'system',
+        content: `You are a helpful assistant specifically designed to answer programming-related questions. However, you can answer other questions too. If you have to provide any code response, provide it without any comments.`
     }
 ];
-
-async function getResponse(data) {
-    const loading = ora({
-        spinner: cliSpinners.clock,
-    }).start();
-
-    try {
-        const response = await axios.post("https://api.openai.com/v1/chat/completions", data, {
-            headers: {
-                'Authorization': `Bearer ${process.env.key}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        loading.stop();
-        return response.data.choices[0].message.content;
-    } catch (error) {
-        loading.fail();
-        console.error("Error:", error);
-        return null;
-    }
-}
 
 async function startChat() {
     while (true) {
         const answers = await inquirer.prompt([
             {
-                type: "input",
-                name: "message",
-                default: "Type your message (/bye to exit, /? for help)",
-                message: chalk.green("\n::-> ")
+                type: 'input',
+                name: 'message',
+                default: 'Type your message (/bye to exit, /? for help)',
+                message: chalk.green('\n::-> ')
             }
         ]);
 
@@ -54,46 +31,38 @@ async function startChat() {
 
         let inprompt = req;
 
-        if (req.toLowerCase() === "/bye") {
-            // console.log(chalk.yellow("\nGoodbye!"));
-
-            let animation = chalkAnimation.karaoke("\nGoodbye!");
+        if (req.toLowerCase() === '/bye') {
+            let animation = chalkAnimation.karaoke('\nGoodbye!');
             animation.start();
-
             setTimeout(() => {
                 animation.stop();
             }, 1000);
-
-
             break;
         }
 
-        if (req.toLowerCase() === "/trace") {
-
-
+        if (req.toLowerCase() === '/trace') {
             ChildExe();
             break;
-
         } else {
-
-
             let userMessage = {
-                role: "user",
+                role: 'user',
                 content: inprompt
             };
 
             history.push(userMessage);
 
             const data = {
-                model: "gpt-3.5-turbo-1106",
-                messages: history
+                model: 'mixtral-8x7b-32768',
+                messages: history,
+                max_tokens: 200,
+                temperature: 0.7
             };
 
-            const botResponse = await getResponse(data);
+            const botResponse = await getGptResponse(data);
 
             if (botResponse) {
                 let assistantMessage = {
-                    role: "assistant",
+                    role: 'assistant',
                     content: botResponse
                 };
 
@@ -104,9 +73,9 @@ async function startChat() {
                     history = [history[0], ...history.slice(-MAX_CONVERSATIONS * 2)];
                 }
 
-                console.log(`${chalk.cyan("\n🤖 ->")}`, color(botResponse));
+                console.log(`${chalk.cyan('\n🤖 ->')}`, color(botResponse));
             } else {
-                console.log(chalk.red("\nError: Failed to get a response from the assistant. Please try again."));
+                console.log(chalk.red('\nError: Failed to get a response from the assistant. Please try again.'));
             }
         }
     }
