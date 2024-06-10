@@ -8,7 +8,7 @@ import getGptResponse from './openai_Grok_resp.js';
 
 dotenv.config();
 
-const MAX_CONVERSATIONS = 5;
+const MAX_CONVERSATIONS = 10;
 let history = [
     {
         role: 'system',
@@ -29,7 +29,6 @@ async function startChat() {
 
         const req = answers.message.trim();
 
-        let inprompt = req;
 
         if (req.toLowerCase() === '/bye') {
             let animation = chalkAnimation.karaoke('\nGoodbye!');
@@ -41,9 +40,35 @@ async function startChat() {
         }
 
         if (req.toLowerCase() === '/trace') {
-            ChildExe();
-            break;
+            history.push({
+                role: 'system',
+                content: `You are an assistant to help users with command-line operations and running any code files, .exe, scripts, .c, etc. 
+                - For incorrect commands, provide the correct format and a brief explanation.
+                - For code file errors, give the line number, error type, and a possible solution.
+                
+                Example:
+                1. User: ls-l
+                   Assistant: Did you mean: ls -l? The "ls -l" command lists files in long format.
+                
+                2. User: node script.js
+                   Assistant: Error on line 23: "ReferenceError: x is not defined". This occurs when using an undeclared variable. Define "x" before using it.`
+            });
+
+            let prompt = await ChildExe();
+
+            let userMessage = {
+                role: 'user',
+                content: prompt
+            };
+
+            // console.log(prompt);
+
+            history.push(userMessage);
+
         } else {
+
+            let inprompt = req;
+
             let userMessage = {
                 role: 'user',
                 content: inprompt
@@ -51,32 +76,33 @@ async function startChat() {
 
             history.push(userMessage);
 
-            const data = {
-                model: 'mixtral-8x7b-32768',
-                messages: history,
-                max_tokens: 200,
-                temperature: 0.7
+        }
+
+        const data = {
+            model: 'mixtral-8x7b-32768',
+            messages: history,
+            max_tokens: 200,
+            temperature: 0.7
+        };
+
+        const botResponse = await getGptResponse(data);
+
+        if (botResponse) {
+            let assistantMessage = {
+                role: 'assistant',
+                content: botResponse
             };
 
-            const botResponse = await getGptResponse(data);
+            history.push(assistantMessage);
 
-            if (botResponse) {
-                let assistantMessage = {
-                    role: 'assistant',
-                    content: botResponse
-                };
-
-                history.push(assistantMessage);
-
-                // Ensure only the last MAX_CONVERSATIONS are kept (each conversation is 2 messages)
-                if (history.length > MAX_CONVERSATIONS * 2 + 1) {
-                    history = [history[0], ...history.slice(-MAX_CONVERSATIONS * 2)];
-                }
-
-                console.log(`${chalk.cyan('\n🤖 ->')}`, color(botResponse));
-            } else {
-                console.log(chalk.red('\nError: Failed to get a response from the assistant. Please try again.'));
+            // Ensure only the last MAX_CONVERSATIONS are kept (each conversation is 2 messages)
+            if (history.length > MAX_CONVERSATIONS * 2 + 1) {
+                history = [history[0], ...history.slice(-MAX_CONVERSATIONS * 2)];
             }
+
+            console.log(`${chalk.cyan('\n🤖 ->')}`, color(botResponse));
+        } else {
+            console.log(chalk.red('\nError: Failed to get a response from the assistant. Please try again.'));
         }
     }
 }

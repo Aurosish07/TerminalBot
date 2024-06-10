@@ -3,35 +3,39 @@ import { exec } from 'child_process';
 
 const { prompt } = inquirer;
 
-function ChildExe() {
-    prompt([
-        {
-            type: 'input',
-            name: 'command',
-            message: 'Enter a command:',
-        }
-    ]).then(answers => {
+async function ChildExe() {
+    while (true) {
+        const answers = await prompt([
+            {
+                type: 'input',
+                name: 'command',
+                message: 'Enter a command:',
+            }
+        ]);
+
         const { command } = answers;
         console.log(`Executing: ${command}`);
 
-        exec(command, (error, stdout, stderr) => {
-            if (error) {
-                console.log(`Error: ${error.message}`);
-            }
-            if (stderr) {
-                console.log(`Stderr: ${stderr}`);
-            }
-            if (stdout) {
-                console.log(`Stdout: ${stdout}`);
-            }
+        try {
+            const { stdout, stderr } = await executeCommand(command);
+            if (stdout) console.log(`Stdout: ${stdout}`);
+            if (stderr) console.log(`Stderr: ${stderr}`);
 
-            // Ask for the next command
-            ChildExe();
+            return `Comaand : ${command} , \nOutput: ${stdout, stderr}`;
+        } catch (error) {
+            console.log(`Error: ${error.message}`);
+            return `Comaand : ${command} , \nOutput: ${error.message}`;
+        }
+    }
+}
+
+function executeCommand(command) {
+    return new Promise((resolve, reject) => {
+        exec(command, (error, stdout, stderr) => {
+            if (error) return reject(error);
+            return resolve({ stdout, stderr });
         });
     });
 }
-
-// Start the interactive session
-// askForCommand();
 
 export default ChildExe;
