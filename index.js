@@ -42,16 +42,9 @@ async function startChat() {
         if (req.toLowerCase() === '/trace') {
             history.push({
                 role: 'system',
-                content: `You are an assistant to help users with command-line operations and running any code files, .exe, scripts, .c, etc. 
-                - For incorrect commands, provide the correct format and a brief explanation.
-                - For code file errors, give the line number, error type, and a possible solution.
-                
-                Example:
-                1. User: ls-l
-                   Assistant: Did you mean: ls -l? The "ls -l" command lists files in long format.
-                
-                2. User: node script.js
-                   Assistant: Error on line 23: "ReferenceError: x is not defined". This occurs when using an undeclared variable. Define "x" before using it.`
+                content: `You are now an assistant to help users with command-line operations your will recive user commands also the output so you have to do :- 
+                - For incorrect commands, provide the correct format and a short explanation.
+                - For code file errors, give the line number, error type, and a possible short solution.`
             });
 
             let prompt = await ChildExe();
