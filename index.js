@@ -29,7 +29,6 @@ async function startChat() {
 
         const req = answers.message.trim();
 
-
         if (req.toLowerCase() === '/bye') {
             let animation = chalkAnimation.karaoke('\nGoodbye!');
             animation.start();
@@ -47,19 +46,49 @@ async function startChat() {
                 - For code file errors, give the line number, error type, and a possible short solution.`
             });
 
-            let prompt = await ChildExe();
+            while (true) {
+                let prompt = await ChildExe();
 
-            let userMessage = {
-                role: 'user',
-                content: prompt
-            };
+                if (prompt === '/exit') {
+                    break; // Exit the trace mode loop
+                }
 
-            // console.log(prompt);
+                let userMessage = {
+                    role: 'user',
+                    content: prompt
+                };
 
-            history.push(userMessage);
+                history.push(userMessage);
+
+                const data = {
+                    model: 'mixtral-8x7b-32768',
+                    messages: history,
+                    max_tokens: 200,
+                    temperature: 0.7
+                };
+
+                const botResponse = await getGptResponse(data);
+
+                if (botResponse) {
+                    let assistantMessage = {
+                        role: 'assistant',
+                        content: botResponse
+                    };
+
+                    history.push(assistantMessage);
+
+                    // Ensure only the last MAX_CONVERSATIONS are kept (each conversation is 2 messages)
+                    if (history.length > MAX_CONVERSATIONS * 2 + 1) {
+                        history = [history[0], ...history.slice(-MAX_CONVERSATIONS * 2)];
+                    }
+
+                    console.log(`${chalk.cyan('\n🤖 ->')}`, color(botResponse));
+                } else {
+                    console.log(chalk.red('\nError: Failed to get a response from the assistant. Please try again.'));
+                }
+            }
 
         } else {
-
             let inprompt = req;
 
             let userMessage = {
@@ -69,33 +98,32 @@ async function startChat() {
 
             history.push(userMessage);
 
-        }
-
-        const data = {
-            model: 'mixtral-8x7b-32768',
-            messages: history,
-            max_tokens: 200,
-            temperature: 0.7
-        };
-
-        const botResponse = await getGptResponse(data);
-
-        if (botResponse) {
-            let assistantMessage = {
-                role: 'assistant',
-                content: botResponse
+            const data = {
+                model: 'mixtral-8x7b-32768',
+                messages: history,
+                max_tokens: 200,
+                temperature: 0.7
             };
 
-            history.push(assistantMessage);
+            const botResponse = await getGptResponse(data);
 
-            // Ensure only the last MAX_CONVERSATIONS are kept (each conversation is 2 messages)
-            if (history.length > MAX_CONVERSATIONS * 2 + 1) {
-                history = [history[0], ...history.slice(-MAX_CONVERSATIONS * 2)];
+            if (botResponse) {
+                let assistantMessage = {
+                    role: 'assistant',
+                    content: botResponse
+                };
+
+                history.push(assistantMessage);
+
+                // Ensure only the last MAX_CONVERSATIONS are kept (each conversation is 2 messages)
+                if (history.length > MAX_CONVERSATIONS * 2 + 1) {
+                    history = [history[0], ...history.slice(-MAX_CONVERSATIONS * 2)];
+                }
+
+                console.log(`${chalk.cyan('\n🤖 ->')}`, color(botResponse));
+            } else {
+                console.log(chalk.red('\nError: Failed to get a response from the assistant. Please try again.'));
             }
-
-            console.log(`${chalk.cyan('\n🤖 ->')}`, color(botResponse));
-        } else {
-            console.log(chalk.red('\nError: Failed to get a response from the assistant. Please try again.'));
         }
     }
 }
