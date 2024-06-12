@@ -9,11 +9,11 @@ function color(str) {
         let colored = chalk.green(match[1]);
         lastIndex = match.index + match[0].length;
 
-        parts.push(chalk.bold.cyan(before));
+        parts.push(chalk.cyan(before));
         parts.push(colored);
     }
 
-    parts.push(chalk.bold.cyan(str.slice(lastIndex)));
+    parts.push(chalk.cyan(str.slice(lastIndex)));
 
     return parts.join("");
 }

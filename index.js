@@ -8,13 +8,21 @@ import getGptResponse from './openai_Grok_resp.js';
 
 dotenv.config();
 
-const MAX_CONVERSATIONS = 5;
+const MAX_CONVERSATIONS = 10;
 let history = [
     {
         role: 'system',
         content: `You are a helpful assistant specifically designed to answer programming-related questions. However, you can answer other questions too. If you have to provide any code response, provide it without any comments.`
     }
 ];
+
+async function displayWithDelay(output) {
+    const lines = output.split('\n');
+    for (const line of lines) {
+        console.log(line);
+        await new Promise(resolve => setTimeout(resolve, 500)); // Adjust the delay as needed
+    }
+}
 
 async function startChat() {
     while (true) {
@@ -29,54 +37,67 @@ async function startChat() {
 
         const req = answers.message.trim();
 
-        let inprompt = req;
-
         if (req.toLowerCase() === '/bye') {
             let animation = chalkAnimation.karaoke('\nGoodbye!');
             animation.start();
             setTimeout(() => {
                 animation.stop();
+                process.exit(0);  // Exit the process
             }, 1000);
             break;
         }
 
         if (req.toLowerCase() === '/trace') {
-            ChildExe();
-            break;
+            history.push({
+                role: 'system',
+                content: `You are now an assistant to help users with command-line operations your will recive user commands also the output so you have to do :- 
+                - For incorrect commands, provide the correct format and a short explanation.
+                - For code file errors, give the line number, error type, and a possible short solution.`
+            });
+
+            let prompt = await ChildExe();
+            let userMessage = {
+                role: 'user',
+                content: prompt
+            };
+
+            history.push(userMessage);
         } else {
+            let inprompt = req;
             let userMessage = {
                 role: 'user',
                 content: inprompt
             };
 
             history.push(userMessage);
+        }
 
-            const data = {
-                model: 'mixtral-8x7b-32768',
-                messages: history,
-                max_tokens: 200,
-                temperature: 0.7
+        const data = {
+            model: 'mixtral-8x7b-32768',
+            messages: history,
+            max_tokens: 200,
+            temperature: 0.7
+        };
+
+        const botResponse = await getGptResponse(data);
+
+        if (botResponse) {
+            let assistantMessage = {
+                role: 'assistant',
+                content: botResponse
             };
 
-            const botResponse = await getGptResponse(data);
+            history.push(assistantMessage);
 
-            if (botResponse) {
-                let assistantMessage = {
-                    role: 'assistant',
-                    content: botResponse
-                };
-
-                history.push(assistantMessage);
-
-                // Ensure only the last MAX_CONVERSATIONS are kept (each conversation is 2 messages)
-                if (history.length > MAX_CONVERSATIONS * 2 + 1) {
-                    history = [history[0], ...history.slice(-MAX_CONVERSATIONS * 2)];
-                }
-
-                console.log(`${chalk.cyan('\n🤖 ->')}`, color(botResponse));
-            } else {
-                console.log(chalk.red('\nError: Failed to get a response from the assistant. Please try again.'));
+            // Ensure only the last MAX_CONVERSATIONS are kept (each conversation is 2 messages)
+            if (history.length > MAX_CONVERSATIONS * 2 + 1) {
+                history = [history[0], ...history.slice(-MAX_CONVERSATIONS * 2)];
             }
+
+            console.log(chalk.cyan('\n🤖 ->'));
+            await displayWithDelay(color(botResponse));
+        } else {
+            console.log(chalk.red('\nError: Failed to get a response from the assistant. Please try again.'));
         }
     }
 }
