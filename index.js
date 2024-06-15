@@ -5,6 +5,7 @@ import color from './algorithm.js';
 import chalkAnimation from 'chalk-animation';
 import ChildExe from './Childprocess.js';
 import getGptResponse from './openai_Grok_resp.js';
+import { PromptReady } from "./readFile.js";
 
 dotenv.config();
 
@@ -86,6 +87,62 @@ async function startChat() {
                 } else {
                     console.log(chalk.red('\nError: Failed to get a response from the assistant. Please try again.'));
                 }
+            }
+
+        } else if (req.toLowerCase().includes('/debug')) {
+
+            let filename = req.split(" ")[1];
+
+            try {
+                let result = await PromptReady(filename);
+
+                history.push({
+                    role: 'system',
+                    content: `
+                        You are an AI assistant designed to help users with coding and debugging tasks. You will be provided with the content of a code file and the output from compiling or running that file. Your task is to:
+                        1. Identify any errors or issues in the code.
+                        2. Provide the correct format and a brief explanation for any incorrect commands.
+                        3. Suggest possible solutions for any compilation or runtime errors, including line numbers and error types.
+                        4. If the code is correct, provide a confirmation and brief explanation of what the code does.
+                        Please ensure your responses are clear, concise, and helpful.
+                    `
+                });
+
+                let userMessage = {
+                    role: 'user',
+                    content: result
+                };
+
+                history.push(userMessage);
+
+                const data = {
+                    model: 'mixtral-8x7b-32768',
+                    messages: history,
+                    max_tokens: 200,
+                    temperature: 0.7
+                };
+
+                const botResponse = await getGptResponse(data);
+
+                if (botResponse) {
+                    let assistantMessage = {
+                        role: 'assistant',
+                        content: botResponse
+                    };
+
+                    history.push(assistantMessage);
+
+                    // Ensure only the last MAX_CONVERSATIONS are kept (each conversation is 2 messages)
+                    if (history.length > MAX_CONVERSATIONS * 2 + 1) {
+                        history = [history[0], ...history.slice(-MAX_CONVERSATIONS * 2)];
+                    }
+
+                    console.log(`${chalk.cyan('\n🤖 ->')}`, color(botResponse));
+                } else {
+                    console.log(chalk.red('\nError: Failed to get a response from the assistant. Please try again.'));
+                }
+            } catch (err) {
+                console.log(err.message);
             }
 
         } else {
