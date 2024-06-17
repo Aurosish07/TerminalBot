@@ -3,17 +3,25 @@ import os from 'os';
 import path from 'path';
 import { exec } from 'node:child_process';
 
-let context_window = 30000;
+let context_window = 12000;
 
 async function readContent(file) {
     try {
         let data = readFileSync(file, 'utf-8');
-        const estimatedTokens = file.split(/\s+/).length;
+        data = data.replace(/ +/g, ' ');
+
+        // Replace multiple newlines with a single newline
+        data = data.replace(/\n+/g, '\n');
+
+        // Trim the content to remove leading and trailing spaces
+        data = data.trim();
+
+        const estimatedTokens = data.length;
 
 
         if (estimatedTokens > context_window) {
             // Truncate content to fit within the context window
-            const truncatedContent = data.split(/\s+/).slice(0, context_window).join(' ');
+            const truncatedContent = data.substring(0, context_window);
             return truncatedContent;
         }
 
@@ -41,7 +49,7 @@ async function compile(file) {
     let compiler = compilers[ext];
 
     if (!compiler) {
-        return `No compiler found listed for file extension: ${ext}`;
+        return `No need compiling for this file type: ${ext}`;
     }
 
     const isWindows = os.platform() === 'win32';

@@ -101,7 +101,7 @@ async function startChat() {
                     content: `
                         You are an AI assistant designed to help users with coding and debugging tasks. You will be provided with the content of a code file and the output from compiling or running that file. Your task is to:
                         1. Identify any errors or issues in the code.
-                        2. Provide the correct format and a brief explanation for any incorrect commands.
+                        2. Provide only the parts where correction needed and a brief explanation for any incorrect commands.
                         3. Suggest possible solutions for any compilation or runtime errors, including line numbers and error types.
                         4. If the code is correct, provide a confirmation and brief explanation of what the code does.
                         Please ensure your responses are clear, concise, and helpful.
@@ -118,7 +118,7 @@ async function startChat() {
                 const data = {
                     model: 'mixtral-8x7b-32768',
                     messages: history,
-                    max_tokens: 200,
+                    max_tokens: 1000,
                     temperature: 0.7
                 };
 
