@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { promises as fs } from 'fs';
 import os from 'os';
 import path from 'path';
 import { exec } from 'node:child_process';
@@ -7,20 +7,14 @@ let context_window = 12000;
 
 async function readContent(file) {
     try {
-        let data = readFileSync(file, 'utf-8');
-        data = data.replace(/ +/g, ' ');
-
-        // Replace multiple newlines with a single newline
-        data = data.replace(/\n+/g, '\n');
-
-        // Trim the content to remove leading and trailing spaces
-        data = data.trim();
+        let data = await fs.readFile(file, 'utf-8');
+        data = data.replace(/ +/g, ' ')
+            .replace(/\n+/g, '\n')
+            .trim();
 
         const estimatedTokens = data.length;
 
-
         if (estimatedTokens > context_window) {
-            // Truncate content to fit within the context window
             const truncatedContent = data.substring(0, context_window);
             return truncatedContent;
         }
