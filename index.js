@@ -17,11 +17,11 @@ let history = [
     }
 ];
 
-async function displayWithDelay(output) {
+async function displayWithDelay(output, x) {
     const lines = output.split('\n');
     for (const line of lines) {
         console.log(line);
-        await new Promise(resolve => setTimeout(resolve, 500)); // Adjust the delay as needed
+        await new Promise(resolve => setTimeout(resolve, x)); // Adjust the delay as needed
     }
 }
 
@@ -48,7 +48,20 @@ async function startChat() {
             break;
         }
 
-        if (req.toLowerCase() === '/trace') {
+        if (req.toLowerCase() === '/help' || req.toLowerCase() === 'help' || req.toLowerCase() === '/?') {
+
+            let help = `
+                 /trace : Start tracing your commands and get info. on wrong command.\n
+                
+                 /debug filename.extention : to debug your code file along compilation, ex: /debug index.js\n
+                
+                 /bye : to exit the bot
+                `;
+            await displayWithDelay(color(help), 300);
+
+
+        }
+        else if (req.toLowerCase() === '/trace') {
             history.push({
                 role: 'system',
                 content: `You are now an assistant to help users with command-line operations your will recive user commands also the output so you have to do :- 
@@ -93,7 +106,7 @@ async function startChat() {
                     }
 
                     console.log(chalk.cyan('\n🤖 ->'));
-                    await displayWithDelay(color(botResponse));
+                    await displayWithDelay(color(botResponse), 500);
                 } else {
                     console.log(chalk.red('\nError: Failed to get a response from the assistant. Please try again.'));
                 }
@@ -148,7 +161,7 @@ async function startChat() {
                     }
 
                     console.log(chalk.cyan('\n🤖 ->'));
-                    await displayWithDelay(color(botResponse));
+                    await displayWithDelay(color(botResponse), 500);
                 } else {
                     console.log(chalk.red('\nError: Failed to get a response from the assistant. Please try again.'));
                 }
@@ -189,7 +202,7 @@ async function startChat() {
                 }
 
                 console.log(chalk.cyan('\n🤖 ->'));
-                await displayWithDelay(color(botResponse));
+                await displayWithDelay(color(botResponse), 500);
             } else {
                 console.log(chalk.red('\nError: Failed to get a response from the assistant. Please try again.'));
             }
