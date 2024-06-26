@@ -1,5 +1,5 @@
 {
-  "name": "gptterminal",
+  "name": "TerminalBot",
   "version": "1.0.0",
   "description": "A terminal based Gpt",
   "type": "module",

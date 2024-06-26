@@ -6,8 +6,13 @@ import chalkAnimation from 'chalk-animation';
 import ChildExe from './Childprocess.js';
 import getGptResponse from './openai_Grok_resp.js';
 import { PromptReady } from "./readFile.js";
+import path from 'path';
+import os from 'os';
 
-dotenv.config();
+const homeDir = os.homedir();
+const homeEnvPath = path.join(homeDir, '.TerminalBot', '.env');
+
+dotenv.config({ path: homeEnvPath });  // Reload environment variables
 
 const MAX_CONVERSATIONS = 10;
 let history = [
@@ -47,8 +52,34 @@ async function startChat() {
             }, 1000);
             break;
         }
+        if (req.toLowerCase() === '/key') {
 
-        if (req.toLowerCase() === '/help' || req.toLowerCase() === 'help' || req.toLowerCase() === '/?') {
+
+            const answers = await inquirer.prompt([
+                {
+                    type: 'input',
+                    name: 'message',
+                    default: 'Go to https://groq.com/ and signup to get your api key',
+                    message: chalk.bold('Enter your new API key here : ')
+                }
+            ]);
+
+            if (answers) {
+                if (!fs.existsSync(path.dirname(homeEnvPath))) {
+                    fs.mkdirSync(path.dirname(homeEnvPath), { recursive: true });
+                }
+
+                fs.writeFileSync(homeEnvPath, `API_KEY=${answers}\n`);
+
+                console.log(chalk.green('API key updated successfully.'));
+
+            } else {
+                console.log(chalk.red('Please provide a new API key.'));
+            }
+
+
+        }
+        else if (req.toLowerCase() === '/help' || req.toLowerCase() === 'help' || req.toLowerCase() === '/?') {
 
             let help = `
                  /trace : Start tracing your commands and get info. on wrong command.\n
