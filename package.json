@@ -1,11 +1,11 @@
 {
-  "name": "TerminalBot",
-  "version": "1.0.1",
+  "name": "terminalbot",
+  "version": "1.0.4",
   "description": "A terminal based Gpt",
   "type": "module",
   "main": "index.js",
   "bin": {
-    "jarvis": "./index.js"
+    "jarvis": "index.js"
   },
   "scripts": {
     "test": "echo \"No tests specified.\" && exit 0"

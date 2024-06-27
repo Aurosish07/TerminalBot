@@ -7,7 +7,7 @@ import path from 'path';
 import os from 'os';
 
 const homeDir = os.homedir();
-const homeEnvPath = path.join(homeDir, '.TerminalBot', '.env');
+const homeEnvPath = path.join(homeDir, '.terminalbot', '.env');
 
 // Load environment variables from the homeEnvPath
 dotenv.config({ path: homeEnvPath });

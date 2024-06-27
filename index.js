@@ -10,9 +10,10 @@ import getGptResponse from './openai_Grok_resp.js';
 import { PromptReady } from "./readFile.js";
 import path from 'path';
 import os from 'os';
+import fs from 'fs';
 
 const homeDir = os.homedir();
-const homeEnvPath = path.join(homeDir, '.TerminalBot', '.env');
+const homeEnvPath = path.join(homeDir, '.terminalbot', '.env');
 
 dotenv.config({ path: homeEnvPath });  // Reload environment variables
 
@@ -66,12 +67,17 @@ async function startChat() {
                 }
             ]);
 
-            if (answers) {
+            const newApiKey = answers.message.trim();
+
+            if (newApiKey) {
                 if (!fs.existsSync(path.dirname(homeEnvPath))) {
                     fs.mkdirSync(path.dirname(homeEnvPath), { recursive: true });
                 }
 
-                fs.writeFileSync(homeEnvPath, `API_KEY=${answers}\n`);
+                fs.writeFileSync(homeEnvPath, `API_KEY=${newApiKey}`);
+                // console.log(newApiKey);
+                dotenv.config({ path: homeEnvPath });
+                // console.log(`${process.env.API_KEY}`)
 
                 console.log(chalk.green('API key updated successfully.'));
 
