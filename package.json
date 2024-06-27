@@ -1,6 +1,6 @@
 {
   "name": "TerminalBot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A terminal based Gpt",
   "type": "module",
   "main": "index.js",
@@ -20,6 +20,5 @@
     "dotenv": "^16.4.5",
     "inquirer": "^9.2.20",
     "ora": "^8.0.1"
-    
   }
 }
