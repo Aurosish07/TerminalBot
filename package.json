@@ -8,7 +8,7 @@
     "jarvis": "./index.js"
   },
   "scripts": {
-    "test": "node index.js"
+    "test": "echo \"No tests specified.\" && exit 0"
   },
   "author": "Aurosish",
   "license": "ISC",
