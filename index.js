@@ -38,7 +38,7 @@ async function startChat() {
             {
                 type: 'input',
                 name: 'message',
-                default: 'Type your message (/bye to exit, /? for help)',
+                default: 'Yes! sir , please type your message (/bye to exit, /help for help)',
                 message: chalk.green('\n::-> ')
             }
         ]);
@@ -81,7 +81,7 @@ async function startChat() {
 
 
         }
-        else if (req.toLowerCase() === '/help' || req.toLowerCase() === 'help' || req.toLowerCase() === '/?') {
+        else if (req.toLowerCase() === '/help' || req.toLowerCase() === '/?') {
 
             let help = `
                  /trace : Start tracing your commands and get info. on wrong command.\n
