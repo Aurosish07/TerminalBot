@@ -21,7 +21,7 @@ const MAX_CONVERSATIONS = 10;
 let history = [
     {
         role: 'system',
-        content: `You are a helpful assistant specifically designed to answer programming-related questions. However, you can answer other questions too. If you have to provide any code response, provide it without any comments.`
+        content: `You are a helpful assistant named jarvis specified to answer programming-related questions. However, you can answer other questions too. If you have to provide any code response, provide it without any comments.`
     }
 ];
 
@@ -39,14 +39,14 @@ async function startChat() {
             {
                 type: 'input',
                 name: 'message',
-                default: 'Yes! sir , please type your message (/bye to exit, /help for help)',
+                default: 'Type your message (/bye to exit, /help for help)',
                 message: chalk.green('\n::-> ')
             }
         ]);
 
         const req = answers.message.trim();
 
-        if (req.toLowerCase() === '/bye') {
+        if (req.toLowerCase() === '/bye' || req.toLowerCase() === '/exit') {
             let animation = chalkAnimation.karaoke('\nGoodbye!');
             animation.start();
             setTimeout(() => {
@@ -62,7 +62,7 @@ async function startChat() {
                 {
                     type: 'input',
                     name: 'message',
-                    default: 'Go to https://groq.com/ and signup to get your api key',
+                    default: 'Go to https://console.groq.com/playground and signup to get your api key',
                     message: chalk.bold('Enter your new API key here : ')
                 }
             ]);
@@ -93,6 +93,8 @@ async function startChat() {
                  /trace : Start tracing your commands and get info. on wrong command.\n
                 
                  /debug filename.extention : to debug your code file along compilation, ex: /debug index.js\n
+
+                 /key : To add your api key
                 
                  /bye : to exit the bot
                 `;
@@ -103,7 +105,7 @@ async function startChat() {
         else if (req.toLowerCase() === '/trace') {
             history.push({
                 role: 'system',
-                content: `You are now an assistant to help users with command-line operations your will recive user commands also the output so you have to do :- 
+                content: `You are now an assistant to help developers with command-line operations your will recive user commands also the output so you have to do :- 
                 - For incorrect commands, provide the correct format and a short explanation.
                 - For code file errors, give the line number, error type, and a possible short solution.`
             });
@@ -111,7 +113,7 @@ async function startChat() {
             while (true) {
                 let prompt = await ChildExe();
 
-                if (prompt === '/exit') {
+                if (prompt === '/exit' || prompt === '/bye') {
                     break; // Exit the trace mode loop
                 }
 
@@ -161,9 +163,9 @@ async function startChat() {
                 history.push({
                     role: 'system',
                     content: `
-                        You are an AI assistant designed to help users with coding and debugging tasks. You will be provided with the content of a code file and the output from compiling or running that file. Your task is to:
+                        You are an AI assistant designed to help users with coding and debugging tasks. You will be provided with the content of a code file and it's output from compiling or running that file. Your task is to:
                         1. Identify any errors or issues in the code.
-                        2. Provide only the parts where correction needed and a brief explanation for any incorrect commands.
+                        2. Provide only the parts where correction needed and a brief explanation for any incorrect codes.
                         3. Suggest possible solutions for any compilation or runtime errors, including line numbers and error types.
                         4. If the code is correct, provide a confirmation and brief explanation of what the code does.
                         Please ensure your responses are clear, concise, and helpful.
