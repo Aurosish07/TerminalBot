@@ -57,6 +57,15 @@ async function startChat() {
         }
         if (req.toLowerCase() === '/key') {
 
+            const oldKey = process.env.API_KEY;
+
+
+            if (oldKey) {
+                const start = oldKey.substring(0, 4);
+                const end = oldKey.substring(oldKey.length - 4, oldKey.length);
+
+                console.log(chalk.cyan.bold("\n Your current API key is : "), chalk.bold.bgCyan(`${start + '*********************************' + end}\n`))
+            }
 
             const answers = await inquirer.prompt([
                 {
@@ -69,7 +78,7 @@ async function startChat() {
 
             const newApiKey = answers.message.trim();
 
-            if (newApiKey) {
+            if (newApiKey != oldKey) {
                 if (!fs.existsSync(path.dirname(homeEnvPath))) {
                     fs.mkdirSync(path.dirname(homeEnvPath), { recursive: true });
                 }
