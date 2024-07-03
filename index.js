@@ -149,7 +149,7 @@ async function startChat() {
                     console.log(chalk.cyan('\n🤖 ->'));
                     await displayWithDelay(color(botResponse), 500);
                 } else {
-                    console.log(chalk.red('\nError: Failed to get a response from the assistant. Please try again.'));
+                    console.log(chalk.red('Request failed,please cheak your internet connection and make sure you have a valid api key , \n for any help type /help'));
                 }
             }
 
@@ -204,7 +204,7 @@ async function startChat() {
                     console.log(chalk.cyan('\n🤖 ->'));
                     await displayWithDelay(color(botResponse), 500);
                 } else {
-                    console.log(chalk.red('\nError: Failed to get a response from the assistant. Please try again.'));
+                    console.log(chalk.red('Request failed,please cheak your internet connection and make sure you have a valid api key , \n for any help type /help'));
                 }
             } catch (err) {
                 console.log(err.message);
@@ -245,7 +245,7 @@ async function startChat() {
                 console.log(chalk.cyan('\n🤖 ->'));
                 await displayWithDelay(color(botResponse), 500);
             } else {
-                console.log(chalk.red('\nError: Failed to get a response from the assistant. Please try again.'));
+                console.log(chalk.red('Request failed,please cheak your internet connection and make sure you have a valid api key , \n for any help type /help'));
             }
         }
     }

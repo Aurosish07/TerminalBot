@@ -28,7 +28,7 @@ async function getGptResponse(data) {
         return response.data.choices[0].message.content;
     } catch (error) {
         loading.fail();
-        console.error("Error:", error);
+        // console.error("Error:", error);
         return null;
     }
 }
