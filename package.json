@@ -1,6 +1,6 @@
 {
   "name": "terminalbot",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A terminal based Gpt",
   "type": "module",
   "main": "index.js",
