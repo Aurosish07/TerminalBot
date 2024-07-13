@@ -71,7 +71,7 @@ async function startChat() {
                 {
                     type: 'input',
                     name: 'message',
-                    default: 'Go to https://console.groq.com/playground and signup to get your api key',
+                    default: 'Go to https://console.groq.com/playground and signup to get your api key , ctrl + c to exit',
                     message: chalk.bold('Enter your new API key here : ')
                 }
             ]);
