@@ -1,10 +1,10 @@
 # TerminalBot (Jarvis)
 
-TerminalBot, also known as Jarvis, is a command-line tool that interacts with the Groq GPT model to provide programming-related assistance and more. This tool is designed to help you with various programming queries directly from your terminal.
+TerminalBot, also known as Jarvis, is a command-line tool that interacts with the Groq A.I model to provide programming-related assistance and more. This tool is designed to help you with various programming queries directly from your terminal. However it can also assist you with other queries. 
 
 ## Features
-- Interacts with the Groq GPT model
 - Provides programming-related assistance
+- has varios built in commands to trace your wrong commands on terminal and debug file
 
 
 ## Installation
