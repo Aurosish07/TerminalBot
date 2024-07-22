@@ -46,6 +46,9 @@ jarvis
 ## Commands
 
 /bye: Exit the application.
+
 /key: Update your API key.
+
 /trace: Trace the execution of the provided file.
+
 /debug file.extname: Debug the specified file.
