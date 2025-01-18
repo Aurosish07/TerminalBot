@@ -6,6 +6,7 @@ TerminalBot, also known as Jarvis, is a command-line tool that interacts with th
 - Provides programming-related assistance
 - has varios built in commands to trace your wrong commands on terminal and debug file
 
+## Demo
 ![Features Demo](.github/assets/demo.gif)
 
 ## Installation
